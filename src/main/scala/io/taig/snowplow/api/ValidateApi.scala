@@ -43,7 +43,8 @@ final class ValidateApi[F[_]: Sync](storage: SchemaStorage[F])
         val payload = Payload.success(action, id)
         Response[F](Status.Ok).withEntity(payload.asJson)
       } else {
-        val payload = Payload.error(action, id, report.toString)
+        val messages = SchemaHelpers.format(report)
+        val payload = Payload.error(action, id, messages)
         Response[F](Status.BadRequest).withEntity(payload.asJson)
       }
   }
