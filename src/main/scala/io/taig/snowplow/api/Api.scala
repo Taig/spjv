@@ -1,4 +1,4 @@
-package io.taig.snowplow
+package io.taig.snowplow.api
 
 import cats.effect.Sync
 import org.http4s.HttpRoutes

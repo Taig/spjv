@@ -1,4 +1,4 @@
-package io.taig.snowplow
+package io.taig.snowplow.data
 
 import io.circe.Encoder
 
