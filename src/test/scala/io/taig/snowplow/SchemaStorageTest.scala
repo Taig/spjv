@@ -2,6 +2,7 @@ package io.taig.snowplow
 
 import cats.effect.IO
 import io.taig.snowplow.data.Id
+import io.taig.snowplow.exception.{SchemaAlreadyExists, SchemaNotFound}
 import org.scalatest.FlatSpec
 
 abstract class SchemaStorageTest extends FlatSpec {
@@ -19,7 +20,7 @@ abstract class SchemaStorageTest extends FlatSpec {
   }
 
   it should "fail when trying to get a non existing schema" in {
-    intercept[Throwable](
+    intercept[SchemaNotFound](
       storage.flatMap(_.getAll(Id("404"))).unsafeRunSync()
     )
   }
@@ -32,6 +33,6 @@ abstract class SchemaStorageTest extends FlatSpec {
       _ <- storage.put(id, "{}")
     } yield ()
 
-    intercept[Throwable](program.unsafeRunSync())
+    intercept[SchemaAlreadyExists](program.unsafeRunSync())
   }
 }

@@ -19,7 +19,8 @@ case object App extends IOApp {
       target <- FileHelpers.createTempDirectory[F]("schemas")
       blocker = Blocker.liftExecutionContext(ExecutionContext.global)
       storage <- FileSchemaStorage[F](blocker, target)
-      api = Api(storage).orNotFound
+      validator = JsonSchemaValidator[F]
+      api = Api(storage, validator).orNotFound
       _ <- server[F](api).use(_ => Async[F].never[Unit])
     } yield ExitCode.Success
 

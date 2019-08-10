@@ -1,7 +1,7 @@
 package io.taig.snowplow.api
 
 import cats.effect.Sync
-import io.taig.snowplow.SchemaStorage
+import io.taig.snowplow.{SchemaStorage, SchemaValidator}
 import org.http4s.HttpRoutes
 import org.http4s.server.Router
 
@@ -12,6 +12,9 @@ object Api {
   ): HttpRoutes[F] =
     Router("/schema" -> schema(), "/validate" -> validate())
 
-  def apply[F[_]: Sync](storage: SchemaStorage[F]): HttpRoutes[F] =
-    Api(SchemaApi(storage), ValidateApi(storage))
+  def apply[F[_]: Sync](
+      storage: SchemaStorage[F],
+      validator: SchemaValidator[F]
+  ): HttpRoutes[F] =
+    Api(SchemaApi(storage), ValidateApi(storage, validator))
 }

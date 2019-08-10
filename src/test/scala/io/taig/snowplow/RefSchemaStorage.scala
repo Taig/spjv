@@ -6,7 +6,7 @@ import cats.effect.concurrent.Ref
 import cats.implicits._
 import fs2.Stream
 import io.taig.snowplow.data.Id
-import io.taig.snowplow.internal.EffectHelpers
+import io.taig.snowplow.exception.{SchemaAlreadyExists, SchemaNotFound}
 
 final class RefSchemaStorage[F[_]: MonadError[?[_], Throwable]](
     store: Ref[F, Map[Id, String]]
@@ -19,7 +19,7 @@ final class RefSchemaStorage[F[_]: MonadError[?[_], Throwable]](
       }
       .flatMap {
         case true  => ().pure[F]
-        case false => EffectHelpers.fail[F](show"Schema for $id already exists")
+        case false => SchemaAlreadyExists(id).raiseError[F, Unit]
       }
   }
 
@@ -27,8 +27,7 @@ final class RefSchemaStorage[F[_]: MonadError[?[_], Throwable]](
     Stream.eval(store.get).flatMap { store =>
       store.get(id) match {
         case Some(value) => Stream.emit(value)
-        case None =>
-          Stream.raiseError[F](new RuntimeException(show"No schema for id $id"))
+        case None        => Stream.raiseError[F](SchemaNotFound(id))
       }
     }
 }

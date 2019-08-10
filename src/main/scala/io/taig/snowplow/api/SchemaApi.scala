@@ -1,17 +1,16 @@
 package io.taig.snowplow.api
 
-import java.nio.file.{FileAlreadyExistsException, NoSuchFileException}
-
 import cats.effect.Sync
 import cats.implicits._
+import io.circe.parser._
+import io.circe.syntax._
 import io.taig.snowplow.SchemaStorage
 import io.taig.snowplow.data.{Action, Id, Payload}
+import io.taig.snowplow.exception.{SchemaAlreadyExists, SchemaNotFound}
 import io.taig.snowplow.internal.SchemaHelpers
-import org.http4s.{HttpRoutes, Response, Status}
-import org.http4s.dsl.Http4sDsl
 import org.http4s.circe._
-import io.circe.syntax._
-import io.circe.parser._
+import org.http4s.dsl.Http4sDsl
+import org.http4s.{HttpRoutes, Response, Status}
 
 /**
   * GET
@@ -52,11 +51,11 @@ final class SchemaApi[F[_]: Sync](storage: SchemaStorage[F])
         Response[F](Status.Ok).withEntity(payload.asJson)
       }
       .handleError {
-        case _: NoSuchFileException =>
+        case _: SchemaNotFound =>
           val payload = Payload.error(action, id, "Schema does not exist")
           Response[F](Status.NotFound).withEntity(payload.asJson)
         case throwable =>
-          val payload = Payload.error(action, id, throwable.getMessage)
+          val payload = Payload.error(action, id, throwable)
           Response[F](Status.InternalServerError).withEntity(payload.asJson)
       }
   }
@@ -70,19 +69,14 @@ final class SchemaApi[F[_]: Sync](storage: SchemaStorage[F])
         Response[F](Status.Created).withEntity(payload.asJson)
       }
       .handleError {
-        case _: FileAlreadyExistsException =>
+        case _: SchemaAlreadyExists =>
           val message = "Schema already defined"
           val payload = Payload.error(action, id, message)
           Response[F](Status.Conflict).withEntity(payload.asJson)
         case throwable =>
-          val payload = Payload.error(action, id, throwable.getMessage)
+          val payload = Payload.error(action, id, throwable)
           Response[F](Status.InternalServerError).withEntity(payload.asJson)
       }
-  }
-
-  def message(throwable: Throwable): String = throwable match {
-    case _: FileAlreadyExistsException => "Schema already defined"
-    case _                             => throwable.getMessage
   }
 }
 
