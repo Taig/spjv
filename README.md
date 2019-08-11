@@ -9,12 +9,15 @@
 
 - `GET /schema/id` returns a status message with a `getSchema` action, not just the schema itself
 - Calling `POST /schema/id` twice with the same id is an error and does therefore not override the existing schema
+- Error messages may differ from the examples in the instructions document
 
 ## Implementation remarks
 
 - Simple file system storage seems sufficient for this task and allows me to avoid the complexity of a database. The feature can however be added easily by providing a respective [SchemaStorage](/src/main/scala/io/taig/snowplow/SchemaStorage.scala) implementation.
 - I picked release candidate / milestone dependencies as an opportunity to take a look  at new features such as the cats-effect `Blocker`. In a real-world production scenario I would of course choose stable releases.
 - The usage of [json-schema-validator](https://github.com/java-json-tools/json-schema-validator) and [circe](https://github.com/circe/circe) is a bit of a mess causing me to go back and forth between JSON ASTs. Circe is however the JSON library I am most comfortable with, so I only fall back to json-schema-validator / jackson for schema specific use cases.
+- Cleaning JSON documents off `null`-values is treated as a json-schema-validator implementation detail.
+- The payload response may contain `"message": null`. Changing the behavior would require to override `http4s-circe` fields.
 
 ## Building an running
 
@@ -62,6 +65,15 @@ java -jar spjv-1.0.0.jar /path/to/storage
 ```
 
 The storage path is optional. When omitted a temporary directory is used. Depending on your setup, that might not persist across app restarts though.
+
+## Sample
+
+```
+> java -jar spjv-1.0.0.jar &
+> curl -d @src/test/resources/config-schema.json http://localhost:8080/schema/config-schema
+> curl -d @src/test/resources/config.json http://localhost:8080/validate/config-schema
+> curl -d @src/test/resources/config-invalid.json http://localhost:8080/validate/config-schema
+```
 
 ## Continuous Integration
 

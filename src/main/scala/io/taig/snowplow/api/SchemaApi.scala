@@ -41,9 +41,7 @@ final class SchemaApi[F[_]: Sync](storage: SchemaStorage[F])
   def get(id: Id): F[Response[F]] = {
     val action = Action.GetSchema
     storage
-      .get(id)
-      .compile
-      .foldMonoid
+      .getAll(id)
       .map(parse)
       .rethrow
       .map { schema =>
