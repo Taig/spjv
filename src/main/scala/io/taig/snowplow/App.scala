@@ -28,7 +28,7 @@ case object App extends IOApp {
       api: HttpApp[F]
   ): Resource[F, Server[F]] =
     BlazeServerBuilder[F]
-      .bindHttp(8080, "localhost")
+      .bindHttp(8080, "0.0.0.0")
       .withHttpApp(api)
       .resource
 }

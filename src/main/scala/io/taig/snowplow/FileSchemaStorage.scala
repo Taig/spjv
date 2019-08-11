@@ -1,12 +1,7 @@
 package io.taig.snowplow
 
 import java.io.File
-import java.nio.file.{
-  FileAlreadyExistsException,
-  NoSuchFileException,
-  Path,
-  StandardOpenOption
-}
+import java.nio.file._
 
 import cats.effect.{Blocker, ContextShift, Sync}
 import cats.implicits._
@@ -15,11 +10,15 @@ import io.taig.snowplow.internal.EffectHelpers
 import io.taig.snowplow.exception.{SchemaAlreadyExists, SchemaNotFound}
 import fs2._
 
+/**
+  * File IO implementation of `SchemaStorage`
+  */
 final class FileSchemaStorage[F[_]: Sync: ContextShift](
     blocker: Blocker,
     target: File
 ) extends SchemaStorage[F] {
   override def put(id: Id, schema: String): F[Unit] = {
+    // Triggers a FileAlreadyExistsException instead of overriding
     val flags = List(StandardOpenOption.CREATE_NEW)
     val write = io.file.writeAll[F](path(id), blocker, flags)
 
@@ -38,7 +37,7 @@ final class FileSchemaStorage[F[_]: Sync: ContextShift](
   override def get(id: Id): Stream[F, String] =
     io.file
       .readAll(path(id), blocker, chunkSize = 4096)
-      .through(fs2.text.utf8Decode)
+      .through(text.utf8Decode)
       .onError {
         case _: NoSuchFileException => Stream.raiseError[F](SchemaNotFound(id))
       }

@@ -5,7 +5,7 @@ import io.taig.snowplow.data.Id
 import io.taig.snowplow.exception.{SchemaAlreadyExists, SchemaNotFound}
 import org.scalatest.FlatSpec
 
-abstract class SchemaStorageTest extends FlatSpec {
+trait SchemaStorageTest { this: FlatSpec =>
   def storage: IO[SchemaStorage[IO]]
 
   it should "return an existing schema" in {

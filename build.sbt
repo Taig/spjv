@@ -4,6 +4,8 @@ val http4sVersion = "0.21.0-M3"
 val slf4jSimpleVersion = "1.7.28"
 val scalatestVersion = "3.0.8"
 
+name := "spjv"
+
 libraryDependencies ++=
   "com.github.java-json-tools" % "json-schema-validator" % jsonSchemaValidatorVersion ::
     "io.circe" %% "circe-core" % circeVersion ::
@@ -16,4 +18,5 @@ libraryDependencies ++=
     "org.scalatest" %% "scalatest" % scalatestVersion % "test" ::
     Nil
 
-scalaVersion := "2.13.0"
+assemblyJarName in assembly := s"${name.value}-${version.value}.jar"
+test in assembly := {}

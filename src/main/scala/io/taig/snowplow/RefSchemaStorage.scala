@@ -8,6 +8,9 @@ import fs2.Stream
 import io.taig.snowplow.data.Id
 import io.taig.snowplow.exception.{SchemaAlreadyExists, SchemaNotFound}
 
+/**
+  * In-memory implementation of `SchemaStorage`
+  */
 final class RefSchemaStorage[F[_]: MonadError[?[_], Throwable]](
     store: Ref[F, Map[Id, String]]
 ) extends SchemaStorage[F] {
