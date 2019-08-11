@@ -15,7 +15,7 @@ object FileHelpers {
       .flatMap(timestamp => createTempDirectory[F](String.valueOf(timestamp)))
 
   def createTempDirectory[F[_]](name: String)(implicit F: Sync[F]): F[File] =
-    F.delay(Files.createTempDirectory(name).toFile)
+    F.delay(Files.createTempDirectory(name + "-").toFile)
 
   def resource[F[_]: ContextShift](name: String, blocker: Blocker)(
       implicit F: Sync[F]
