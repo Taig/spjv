@@ -7,6 +7,9 @@ import io.circe.Printer
 import io.circe.parser.parse
 import io.taig.snowplow.internal.SchemaHelpers
 
+/**
+  * json-schema-validator based implementation of `SchemaValidator`
+  */
 final class JsonSchemaValidator[F[_]: Sync] extends SchemaValidator[F] {
   override def validate(schema: String, document: String): F[Option[String]] =
     for {
