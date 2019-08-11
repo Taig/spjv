@@ -10,13 +10,23 @@ import org.http4s.dsl.Http4sDsl
 import org.http4s.{HttpRoutes, Response, Status}
 
 /**
-  * POST
+  * POST (valid)
   * {{{
   * curl \
   *   --verbose \
   *   -X POST \
   *   -H "Content-Type: application/json" \
-  *   -d @config.json \
+  *   -d @src/test/resources/config.json \
+  *   http://localhost:8080/validate/config-schema
+  * }}}
+  *
+  * POST (invalid)
+  * {{{
+  * curl \
+  *   --verbose \
+  *   -X POST \
+  *   -H "Content-Type: application/json" \
+  *   -d @src/test/resources/config-invalid.json \
   *   http://localhost:8080/validate/config-schema
   * }}}
   */

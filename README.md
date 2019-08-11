@@ -48,7 +48,7 @@ Docker is primarily intended for CI purposes but can also be used to build the a
       -p 8080:8080 \
       --entrypoint /bin/bash \
       spjv \
-      sbt run
+      sbt run /path/to/storage
     ```
 
 3. Server will become available on `http://localhost:8080/`
@@ -58,8 +58,10 @@ Docker is primarily intended for CI purposes but can also be used to build the a
 Instead of building the app yourself, you may as well just use the executable that is generated as part of the CI process with [sbt-assembly](https://github.com/sbt/sbt-assembly). The JAR file can be downloaded from every [CI pipeline](https://gitlab.com/taig-github/spjv/pipelines).
 
 ```
-java -jar spjv-1.0.0.jar
+java -jar spjv-1.0.0.jar /path/to/storage
 ```
+
+The storage path is optional. When omitted a temporary directory is used. Depending on your setup, that might not persist across app restarts though.
 
 ## Continuous Integration
 

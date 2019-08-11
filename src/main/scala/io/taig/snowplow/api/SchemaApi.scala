@@ -26,7 +26,7 @@ import org.http4s.{HttpRoutes, Response, Status}
   *   --verbose \
   *   -X POST \
   *   -H "Content-Type: application/json" \
-  *   -d @config-schema.json \
+  *   -d @src/test/resources/config-schema.json \
   *   http://localhost:8080/schema/config-schema
   * }}}
   */
